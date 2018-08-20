@@ -108,14 +108,14 @@ function shuffleNames(type1, type2) {
 
 function getOpeningRandomMessage(surah) {
   let msg = [
-    `ok, opening surah ${surah}`,
-    `ok, here it is`,
-    `okay, opening surah ${surah}`,
-    `here is surah ${surah}`,
-    `okay, there it is`,
-    `opening surah ${surah}`,
-    `sure, opening surah ${surah}`,
-    `ok, there we go`
+    `Ok, opening surah ${surah}`,
+    `Ok, here it is`,
+    `Okay, opening surah ${surah}`,
+    `Here is surah ${surah}`,
+    `Okay, there it is`,
+    `Opening surah ${surah}`,
+    `Sure, opening surah ${surah}`,
+    `Ok, there we go`
   ];
   /* Shuffle ang get random message */
   return msg[Math.floor(Math.random() * msg.length)];
@@ -124,6 +124,7 @@ function getOpeningRandomMessage(surah) {
 function displaySuggestions() {
   /* copy first 7 random names for suggestions */
   let suggestion = names.slice(0, 6);
+  suggestion.push('⋯');
   suggestion.push('↺');
   return new Suggestions(suggestion);
 }
@@ -133,6 +134,8 @@ function getRandomMsg(arr) {
 }
 
 app.intent('Default Welcome Intent', (conv) => {
+  /* set default lang for user */
+  conv.user.storage.lang = 'en';
 
   conv.ask(new SimpleResponse({
     speech: getWelcomeSSML(),
@@ -164,7 +167,6 @@ app.intent('read', (conv) => {
 });
 
 app.intent('listen', (conv, {surah}) => {
-  console.info(conv.user.storage);
 
   /* for checking supported screen device capability */
   if (!conv.surface.capabilities.has('actions.capability.MEDIA_RESPONSE_AUDIO')) {
@@ -213,10 +215,10 @@ app.intent('playback completed', (conv) => {
   if (mediaStatus && mediaStatus.status === 'FINISHED') {
     response = getRandomMsg([
       'You might also like to listen these.',
-      'You might like these.',
-      'You should also listen to this.',
-      `You'll love to listen these.`,
-      `You'd love to hear these.`
+      'You might also like these.',
+      'You should also listen to these.',
+      `You'll also love to listen these.`,
+      `You'd also love to hear these.`
     ]);
   }
 
@@ -225,18 +227,34 @@ app.intent('playback completed', (conv) => {
 });
 
 app.intent('translate', (conv) => {
-  console.info(conv.user.storage);
-  conv.ask(getRandomMsg(['Okay!', 'Translating...', 'Alright!', 'Translating.']));
-  if(conv.user.storage.language && conv.user.storage.language === 'en') {
-    console.info('setting urdu names');
+
+  conv.ask(getRandomMsg(['Okay!', 'Ok', 'Okay', 'Ok!', 'Alright!']));
+
+  if(!conv.user.storage.lang) conv.user.storage.lang = 'en';
+
+  if(conv.user.storage.lang === 'en') {
     names = urduNames;
-    conv.user.storage.language = 'urdu';
+    conv.user.storage.lang = 'urdu';
   } else {
-    console.info('setting english names');
     names = englishNames;
-    conv.user.storage.language = 'en';
+    conv.user.storage.lang = 'en';
   }
+
+  console.info('storage lang ', conv.user.storage);
+
   conv.add(displaySuggestions());
+
+});
+
+app.intent('load more', (conv) => {
+
+  conv.ask(getRandomMsg(['Here it is.', 'Okay!', 'There you go.', 'Alright!']));
+
+  /* Shuffle quran surah names everytime whenever this intent call */
+  shuffleNames(englishNames, urduNames);
+
+  conv.add(displaySuggestions());
+
 });
 
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest(app);
