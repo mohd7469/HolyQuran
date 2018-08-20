@@ -244,8 +244,6 @@ app.intent('translate', (conv) => {
     conv.user.storage.lang = 'en';
   }
 
-  console.info('storage lang ', conv.user.storage);
-
   conv.add(displaySuggestions());
 
 });
