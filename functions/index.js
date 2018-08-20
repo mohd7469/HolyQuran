@@ -211,7 +211,11 @@ app.intent('listen', (conv, {surah}) => {
 
 app.intent('playback completed', (conv) => {
   const mediaStatus = conv.arguments.get('MEDIA_STATUS');
-  let response = 'Hope you enjoyed it.';
+  let response = getRandomMsg([
+    `I hope you've had a great day so far`,
+    'Hope you had a wonderful day.',
+    'I hope you had a wonderful day.'
+  ]);
   if (mediaStatus && mediaStatus.status === 'FINISHED') {
     response = getRandomMsg([
       'You might also like to listen these.',
