@@ -26,6 +26,32 @@ const {
 /* Instantiate Dialogflow client */
 const app = dialogflow();
 
+/*
+ retrieve all Quran Surah names at the very beginning when this app
+ initialized because it takes sometimes so, reason of doing this whenever
+ user ask for Surah it should be ready on that time and could be send back
+ directly to user without waiting him/her, more imp thing this is 1 time effort
+ */
+
+initializeQuranSurahNames();
+
+let surahNames = {};
+
+function initializeQuranSurahNames() {
+  console.info(`--------------- initializing... ---------------`);
+  db.collection('quran').get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          surahNames[doc.id] = doc.data();
+        });
+        console.info(`--------------- ${Object.keys(surahNames).length} Surah initialized successfully ---------------`);
+        return null;
+      })
+      .catch((err) => {
+        console.log('Error getting documents ', err);
+      });
+}
+
 function getInProcessSSML() {
   let today = new Date();
   let date = today.getDate() + '-' + today.getMonth();
@@ -151,6 +177,7 @@ app.intent('Default Welcome Intent', (conv) => {
       alt: 'The Holy Quran'
     })
   });
+
   conv.add(welcomeView);
   conv.add(new Suggestions('listen', 'read'));
 
@@ -174,38 +201,23 @@ app.intent('listen', (conv, {surah}) => {
     return;
   }
 
-  /* Shuffle quran surah names everytime whenever this intent call */
+  /* Shuffle quran surah names everytime for suggestion whenever this intent call */
   shuffleNames(englishNames, urduNames);
 
-  let data = {};
+  conv.ask(getOpeningRandomMessage(surah));
 
-  return db.collection('quran').get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        data[doc.id] = doc.data();
-      });
-      return data;
+  let playAudio = new MediaObject({
+    name: `Surah ${surahNames[surah]['alt']}`,
+    url: surahNames[surah]['audio'],
+    description: surahNames[surah]['subtitle'] ? surahNames[surah]['subtitle'] : null,
+    icon: new Image({
+      url: 'https://pbs.twimg.com/profile_images/677515986828939264/N_vffeWw_400x400.png',
+      alt: surahNames[surah]['alt']
     })
-    .then(() => {
-      conv.ask(getOpeningRandomMessage(surah));
-      let playAudio = new MediaObject({
-        name: `Surah ${data[surah]['alt']}`,
-        url: data[surah]['audio'],
-        description: data[surah]['subtitle'] ? data[surah]['subtitle'] : null,
-        icon: new Image({
-          url: 'https://pbs.twimg.com/profile_images/677515986828939264/N_vffeWw_400x400.png',
-          alt: data[surah]['alt']
-        })
-      });
+  });
 
-      conv.add(playAudio);
-      conv.add(displaySuggestions());
-      return;
-    })
-    .catch((err) => {
-      console.log('Error getting documents ', err);
-      conv.close(`i am sorry for this ${err}`);
-    });
+  conv.add(playAudio);
+  conv.add(displaySuggestions());
 
 });
 
