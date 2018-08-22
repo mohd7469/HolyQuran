@@ -222,6 +222,7 @@ app.intent('listen', (conv, {surah}) => {
 });
 
 app.intent('playback completed', (conv) => {
+
   const mediaStatus = conv.arguments.get('MEDIA_STATUS');
   let response = getRandomMsg([
     `I hope you've had a great day so far`,
@@ -240,11 +241,17 @@ app.intent('playback completed', (conv) => {
 
   conv.ask(response);
   conv.add(displaySuggestions());
+
 });
 
 app.intent('translate', (conv) => {
 
-  conv.ask(getRandomMsg(['Okay!', 'Ok', 'Okay', 'Ok!', 'Alright!']));
+  /* if the request contains the word " translate ", change the response */
+  if(conv.body.queryResult.queryText.toLowerCase().indexOf('translate') !== -1) {
+    conv.ask(getRandomMsg(['Okay, no problem!', 'No problem', 'Ok, no problem']));
+  } else {
+    conv.ask(getRandomMsg(['Okay!', 'Ok', 'Okay', 'Ok!', 'Alright!']));
+  }
 
   if(!conv.user.storage.lang) conv.user.storage.lang = 'en';
 
