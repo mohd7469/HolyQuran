@@ -83,7 +83,7 @@ function getWelcomeSSML() {
   return msg[Math.floor(Math.random() * msg.length)];
 }
 
-let urduNames = [
+let arabicNames = [
   'الفاتحہ', 'البقرۃ', 'آل عمران', ' ٓالنسا', 'المائدۃ', 'الانعام', 'الاعراف',
   'الانفال', 'التوبۃ', 'یونس', 'ھود', 'یوسف', 'الرعد', 'ابراھیم', 'الحجر',
   'النحل', 'الاسرا', 'الکھف', 'مریم', 'طٰہٰ', 'الانبیآ', 'الحج', 'المومنون', 'النور',
@@ -160,6 +160,7 @@ function getRandomMsg(arr) {
 }
 
 app.intent('Default Welcome Intent', (conv) => {
+
   /* set default lang for user */
   conv.user.storage.lang = 'en';
 
@@ -202,7 +203,7 @@ app.intent('listen', (conv, {surah}) => {
   }
 
   /* Shuffle quran surah names everytime for suggestion whenever this intent call */
-  shuffleNames(englishNames, urduNames);
+  shuffleNames(englishNames, arabicNames);
 
   conv.ask(getOpeningRandomMessage(surah));
 
@@ -256,8 +257,8 @@ app.intent('translate', (conv) => {
   if(!conv.user.storage.lang) conv.user.storage.lang = 'en';
 
   if(conv.user.storage.lang === 'en') {
-    names = urduNames;
-    conv.user.storage.lang = 'urdu';
+    names = arabicNames;
+    conv.user.storage.lang = 'arabic';
   } else {
     names = englishNames;
     conv.user.storage.lang = 'en';
@@ -272,9 +273,103 @@ app.intent('load more', (conv) => {
   conv.ask(getRandomMsg(['Here it is.', 'Okay!', 'There you go.', 'Alright!']));
 
   /* Shuffle quran surah names everytime whenever this intent call */
-  shuffleNames(englishNames, urduNames);
+  shuffleNames(englishNames, arabicNames);
 
   conv.add(displaySuggestions());
+
+});
+
+app.intent('display surah', (conv, {nameType}) => {
+
+  (function(){
+
+    /* Shuffle quran surah names everytime whenever this intent call */
+    shuffleNames(englishNames, arabicNames);
+
+    let displayArabicNames = [
+      'الفاتحہ', 'البقرۃ', 'آل عمران', ' ٓالنسا', 'المائدۃ', 'الانعام', 'الاعراف',
+      'الانفال', 'التوبۃ', 'یونس', 'ھود', 'یوسف', 'الرعد', 'ابراھیم', 'الحجر',
+      'النحل', 'الاسرا', 'الکھف', 'مریم', 'طٰہٰ', 'الانبیآ', 'الحج', 'المومنون', 'النور',
+      'الفرقان', 'الشعرآ', 'النمل', 'القصص', 'العنکبوت', 'الروم', 'لقمان', 'السجدۃ',
+      'الاحزاب', 'سبا', 'فاطر', 'یٰس', 'الصافات', 'ص', 'الزمر', 'غافر', 'فصلت',
+      'الشوری', 'الزخرف', 'الدخان', 'الجاثیۃ', 'الاحقاف', 'محمد', 'الفتح', 'الحجرات',
+      'ق', 'الذاریات', 'الطور', 'النجم', 'القمر', 'الرحٰمن', 'الواقعہ', 'الحدید',
+      'المجادلہ', 'الحشر', 'الممتحنۃ', 'الصف', 'الجمعۃ', 'المنافقون', 'التغابن',
+      'الطلاق', 'التحریم', 'الملک', 'القلم', 'الحاقۃ', 'المعارج', 'نوح', 'الجن',
+      'المزمل', 'المدثر', 'القیامۃ', 'الانسان', 'المرثلات', 'النبا', 'النازعات',
+      'عبس', 'التکویر', 'الانفطار', 'المطففین', 'الانشقاق', 'البروج', 'الطارق',
+      'الاعلی', 'الغاشیۃ', 'الفجر', 'البلد', 'الشمس', 'اللیل', 'الضحی', 'الشرح',
+      'التین', 'العلق', 'القدر', 'البینۃ', 'الزلزلۃ', 'العادیات', 'القارعۃ',
+      'التکاثر', 'العصر', 'الھمزۃ', 'الفیل', 'قریش', 'الماعون', 'الکوثر',
+      'الکافرون', 'النصر', 'المسد', 'الاخلاص', 'الفلق', 'الناس'
+    ];
+    let displayEnglishNames = [
+      'fatiha', 'baqarah', 'imran', 'nisa', 'maeda', 'inaam', 'araaf',
+      'anfaal', 'taubah', 'yunus', 'hud', 'yusuf', 'raad', 'ibrahim', 'hijr',
+      'nahl', 'isra', 'kahf', 'maryam', 'taha', 'anbiya', 'hajj', 'mumenoon', 'noor',
+      'furqan', 'shuara', 'naml', 'qasas', 'ankaboot', 'room', 'luqman', 'sajdah',
+      'ahzab', 'saba', 'fatir', 'yaseen', 'saaffat', 'suad', 'zumar', 'ghafir', 'fussilat',
+      'shura', 'zukhruf', 'dukhan', 'jasiya', 'ahqaf', 'muhammad', 'fath', 'hujraat',
+      'qaf', 'zariyat', 'tur', 'najm', 'qamar', 'rehman', 'waqiah', 'hadeed',
+      'mujadila', 'hashr', 'mumtahina', 'saff', 'jumma', 'munafiqoon', 'taghabun',
+      'talaq', 'tahrim', 'mulk', 'qalam', 'haaqqa', 'maarij', 'nooh', 'jinn',
+      'muzamil', 'mudasir', 'qiyama', 'insan', 'mursalat', 'naba', 'naziat',
+      'abasa', 'takwir', 'infitar', 'mutaffifin', 'inshiqaq', 'burooj', 'tariq',
+      'alaa', 'ghashiya', 'fajr', 'balad', 'shams', 'lail', 'zuha', 'nashrah',
+      'tin', 'alaq', 'qadr', 'bayyina', 'zalzala', 'adiyaat', 'qaria',
+      'takasur', 'asr', 'humaza', 'feel', 'quraish', 'maun', 'kausar',
+      'kafiroon', 'nasr', 'masad', 'ikhlas', 'falaq', 'naas'
+    ];
+
+    let displayNamesView;
+    let suggestion;
+
+    if(nameType) {
+      conv.ask(getRandomMsg([
+        `Okay, no problem showing ${nameType} surah names.`,
+        `Ok, showing ${nameType} names.`,
+        `Alright, showing surah names in ${nameType}.`
+      ]));
+      if(nameType === 'arabic') {
+        displayNamesView = new BasicCard({
+          text: displayArabicNames.toString().replace(/,/g , ', '),
+          title: `____________________________________`,
+          subtitle: '114 Surah Arabic names of Holy Quran.'
+        });
+        /* copy first 7 random arabic names for suggestions */
+        suggestion = arabicNames.slice(0, 6);
+      } else {
+        displayNamesView = new BasicCard({
+          text: displayEnglishNames.toString().replace(/,/g , ', '),
+          title: `_______________________________`,
+          subtitle: '114 Surah names of Holy Quran.'
+        });
+        /* copy first 7 random english names for suggestions */
+        suggestion = englishNames.slice(0, 6);
+      }
+    } else {
+      conv.ask(getRandomMsg([
+        `Okay, no problem showing all surah names.`,
+        `Ok, showing all names.`,
+        `Alright, showing surah names.`
+      ]));
+      displayNamesView = new BasicCard({
+        text: displayEnglishNames.toString().replace(/,/g , ', '),
+        title: `_______________________________`,
+        subtitle: '114 Surah names of Holy Quran.'
+      });
+      /* copy first 7 random arabic names for suggestions */
+      suggestion = englishNames.slice(0, 6);
+    }
+
+    conv.add(displayNamesView);
+
+    suggestion.push('⋯');
+    suggestion.push('↺');
+
+    conv.add(new Suggestions(suggestion));
+
+  })();
 
 });
 
