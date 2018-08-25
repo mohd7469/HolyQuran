@@ -27,24 +27,41 @@ const {
 const app = dialogflow();
 
 /*
- retrieve all Quran Surah names at the very beginning when this app
+ retrieve all Quran Surah names and Parah names at the very beginning when this app
  initialized because it takes sometimes so, reason of doing this whenever
  user ask for Surah it should be ready on that time and could be send back
  directly to user without waiting him/her, more imp thing this is 1 time effort
  */
 
 initializeQuranSurahNames();
+initializeQuranParaNames();
 
 let surahNames = {};
+let parahNames = {};
 
 function initializeQuranSurahNames() {
-  console.info(`--------------- initializing... ---------------`);
+  console.info(`--------------- initializing 114 Surah... ---------------`);
   db.collection('quran').get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           surahNames[doc.id] = doc.data();
         });
         console.info(`--------------- ${Object.keys(surahNames).length} Surah initialized successfully ---------------`);
+        return null;
+      })
+      .catch((err) => {
+        console.log('Error getting documents ', err);
+      });
+}
+
+function initializeQuranParaNames() {
+  console.info(`--------------- initializing 30 Parah... ---------------`);
+  db.collection('parah').get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
+          parahNames[doc.id] = doc.data();
+        });
+        console.info(`--------------- ${Object.keys(parahNames).length} Parah initialized successfully ---------------`);
         return null;
       })
       .catch((err) => {
