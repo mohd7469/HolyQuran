@@ -34,7 +34,7 @@ const app = dialogflow();
  */
 
 initializeQuranSurahNames();
-initializeQuranParaNames();
+initializeQuranParahNames();
 
 let surahNames = {};
 let parahNames = {};
@@ -54,14 +54,14 @@ function initializeQuranSurahNames() {
       });
 }
 
-function initializeQuranParaNames() {
-  console.info(`--------------- initializing 30 Parah... ---------------`);
+function initializeQuranParahNames() {
+  console.info(`--------------- initializing 30 Parah.... ---------------`);
   db.collection('parah').get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {
           parahNames[doc.id] = doc.data();
         });
-        console.info(`--------------- ${Object.keys(parahNames).length} Parah initialized successfully ---------------`);
+        console.info(`--------------- ${Object.keys(parahNames).length} Parah initialized successfully ----------------`);
         return null;
       })
       .catch((err) => {
@@ -176,6 +176,11 @@ function getRandomMsg(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function shuffle(o) {
+  for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+  return o;
+}
+
 app.intent('Default Welcome Intent', (conv) => {
 
   /* set default lang for user */
@@ -202,6 +207,35 @@ app.intent('Default Welcome Intent', (conv) => {
 });
 
 app.intent('read', (conv) => {
+
+  //conv.ask(new SimpleResponse({
+  //  speech: getInProcessSSML(),
+  //  text: 'This section is under development.'
+  //}));
+  //conv.add(new Suggestions('listen'));
+
+  (function(){
+
+    let parahs = Object.keys(parahNames);
+    shuffle(parahs);
+    let suggestion = parahs.slice(0, 8);
+
+    conv.ask(new SimpleResponse({
+      speech: getRandomMsg([
+        `Okay! what would you like to read`,
+        `Okay no problem! can you please tell me the name`,
+        `Alright! please tell me the name` ,
+        `Please tell me what are you thinking`
+      ]),
+      text: 'Which one ?'
+    }));
+    conv.add(new Suggestions(suggestion));
+
+  })();
+
+});
+
+app.intent('start reciting', (conv) => {
 
   conv.ask(new SimpleResponse({
     speech: getInProcessSSML(),
