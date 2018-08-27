@@ -16,10 +16,11 @@ var db = admin.firestore();
 /* Import Dialogflow module from the Actions on Google client library */
 const {
   SimpleResponse,
+  MediaObject,
   Suggestions,
   dialogflow,
   BasicCard,
-  MediaObject,
+  Button,
   Image
   } = require('actions-on-google');
 
@@ -235,13 +236,28 @@ app.intent('read', (conv) => {
 
 });
 
-app.intent('start reciting', (conv) => {
+app.intent('start reciting', (conv, {parah}) => {
 
-  conv.ask(new SimpleResponse({
-    speech: getInProcessSSML(),
-    text: 'This section is under development.'
-  }));
-  conv.add(new Suggestions('listen'));
+  conv.ask(getRandomMsg(['Here it is.', 'Okay, Here it is.', 'Alright, there you go.']));
+
+  console.info(Object.keys(parahNames).length);
+  console.info(parahNames);
+
+  let displaySurah = new BasicCard({
+    text: parahNames[parah].description,
+    subtitle: parahNames[parah].alt,
+    title: parahNames[parah].ref,
+    image: new Image({
+      url: parahNames[parah].cover,
+      alt: parahNames[parah].alt
+    }),
+    buttons: parahNames[parah].view ? new Button({
+      title: 'Continue reading..',
+      url: parahNames[parah].view
+    }) : null
+  });
+
+  conv.add(displaySurah);
 
 });
 
