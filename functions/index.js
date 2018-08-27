@@ -240,9 +240,6 @@ app.intent('start reciting', (conv, {parah}) => {
 
   conv.ask(getRandomMsg(['Here it is.', 'Okay, Here it is.', 'Alright, there you go.']));
 
-  console.info(Object.keys(parahNames).length);
-  console.info(parahNames);
-
   let displaySurah = new BasicCard({
     text: parahNames[parah].description,
     subtitle: parahNames[parah].alt,
