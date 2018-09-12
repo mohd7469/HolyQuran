@@ -68,6 +68,15 @@ function initializeQuranParahNames() {
       .catch((err) => {
         console.log('Error getting documents ', err);
       });
+  let query = db.collection('parah');
+  let observer = query.onSnapshot(querySnapshot => {
+    console.log(`Receiving updates..`);
+    querySnapshot.forEach((doc) => {
+      parahNames[doc.id] = doc.data();
+    });
+  }, err => {
+    console.log(`Encountered error: ${err}`);
+  });
 }
 
 function getInProcessSSML() {
@@ -84,7 +93,7 @@ function getInProcessSSML() {
           <break time="500ms"/>
 					so
           <break time="500ms"/>
-          i am gonna let you notify soon when this will be done
+          i am gonna let you notify when this will be done
           <break time="700ms"/>
           until you should listen to it
           <break time="500ms"/>
