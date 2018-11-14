@@ -212,7 +212,8 @@ app.intent('Default Welcome Intent', (conv) => {
   });
 
   conv.add(welcomeView);
-  conv.add(new Suggestions('listen', 'read'));
+  // conv.add(new Suggestions('listen', 'read'));
+  conv.add(new Suggestions('listen', 'help'));
 
 });
 
@@ -264,6 +265,11 @@ app.intent('start reciting', (conv, {parah}) => {
   });
 
   conv.add(displaySurah);
+  conv.add(getRandomMsg([
+    `anything else !`,
+    `anything else ?`,
+    `anything else ??`
+  ]));
 
 });
 
@@ -349,7 +355,12 @@ app.intent('load more', (conv) => {
   shuffleNames(englishNames, arabicNames);
 
   conv.add(displaySuggestions());
-
+  conv.add(getRandomMsg([
+    `which one !`,
+    `which one ?`,
+    `which one ??`
+  ]));
+  
 });
 
 app.intent('display surah', (conv, {nameType}) => {
@@ -441,6 +452,11 @@ app.intent('display surah', (conv, {nameType}) => {
     suggestion.push('↺');
 
     conv.add(new Suggestions(suggestion));
+    conv.add(getRandomMsg([
+      `which one !`,
+      `which one ?`,
+      `which one ??`
+    ]));
 
   })();
 
